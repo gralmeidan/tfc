@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcryptjs';
 import RestError from '../error/RestError';
-import User from '../database/models/user.model';
+import UserModel from '../database/models/user.model';
 
 export default class UserService {
-  constructor(private model = User) {}
+  constructor(private model = UserModel) {}
 
   public autenticate = async (
     username: string,

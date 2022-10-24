@@ -1,7 +1,7 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import { validAdmin } from '../../mocks/user.mock';
-import User from '../../../database/models/user.model';
+import UserModel from '../../../database/models/user.model';
 import UserService from '../../../services/user.service';
 import RestError from '../../../error/RestError';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -15,15 +15,15 @@ describe('Unit tests for UserService', () => {
     const service = new UserService();
 
     after(() => {
-      (User.findOne as sinon.SinonStub).restore();
+      (UserModel.findOne as sinon.SinonStub).restore();
     });
 
     before(async () => {
-      sinon.stub(User, 'findOne');
+      sinon.stub(UserModel, 'findOne');
     });
 
     it('Should throw an error if user is not found', async () => {
-      (User.findOne as sinon.SinonStub).resolves(null);
+      (UserModel.findOne as sinon.SinonStub).resolves(null);
 
       await expect(
         service.autenticate('admin', '123'),
@@ -31,7 +31,9 @@ describe('Unit tests for UserService', () => {
     });
 
     it('Should return false if password is invalid', async () => {
-      (User.findOne as sinon.SinonStub).resolves(validAdmin.fromDb);
+      (UserModel.findOne as sinon.SinonStub).resolves(
+        validAdmin.fromDb,
+      );
 
       const isValid = await service.autenticate('admin', '123');
 
@@ -39,7 +41,9 @@ describe('Unit tests for UserService', () => {
     });
 
     it('Should return true if password is valid', async () => {
-      (User.findOne as sinon.SinonStub).resolves(validAdmin.fromDb);
+      (UserModel.findOne as sinon.SinonStub).resolves(
+        validAdmin.fromDb,
+      );
 
       const isValid = await service.autenticate(
         'admin',
