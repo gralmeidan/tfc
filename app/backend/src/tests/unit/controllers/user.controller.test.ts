@@ -21,15 +21,7 @@ describe('Unit tests for UserController', () => {
       body: { username: 'admin', password: '123' },
     } as Request;
 
-    it('Should throw an error if password is invalid', async () => {
-      (service.autenticate as sinon.SinonStub).resolves(false);
-
-      await expect(
-        controller.login(request, {} as Response),
-      ).to.be.rejectedWith(RestError);
-    });
-
-    it('Should return false if password is invalid', async () => {
+    it('Should correctly return the token', async () => {
       (service.autenticate as sinon.SinonStub).resolves(true);
 
       const res = {} as Response;

@@ -30,27 +30,27 @@ describe('Unit tests for UserService', () => {
       ).to.be.rejectedWith(RestError);
     });
 
-    it('Should return false if password is invalid', async () => {
+    it('Should throw an error if password is invalid', async () => {
       (UserModel.findOne as sinon.SinonStub).resolves(
         validAdmin.fromDb,
       );
 
-      const isValid = await service.autenticate('admin', '123');
-
-      expect(isValid).to.be.false;
+      await expect(
+        service.autenticate('admin', '123'),
+      ).to.be.rejectedWith(RestError);
     });
 
-    it('Should return true if password is valid', async () => {
+    it('Should return the user if password is valid', async () => {
       (UserModel.findOne as sinon.SinonStub).resolves(
         validAdmin.fromDb,
       );
 
-      const isValid = await service.autenticate(
+      const response = await service.autenticate(
         'admin',
         validAdmin.password,
       );
 
-      expect(isValid).to.be.true;
+      expect(response).to.deep.equal(validAdmin.hiddenPassword);
     });
   });
 });
