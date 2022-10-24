@@ -22,6 +22,18 @@ describe('Unit tests for UserService', () => {
       sinon.stub(UserModel, 'findOne');
     });
 
+    it("Should throw an error if email or password aren't passed", async () => {
+      (UserModel.findOne as sinon.SinonStub).resolves(null);
+
+      await expect(
+        service.autenticate(undefined as any, '123'),
+      ).to.be.rejectedWith(RestError);
+
+      await expect(
+        service.autenticate('admin', undefined as any),
+      ).to.be.rejectedWith(RestError);
+    });
+
     it('Should throw an error if user is not found', async () => {
       (UserModel.findOne as sinon.SinonStub).resolves(null);
 

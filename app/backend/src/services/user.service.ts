@@ -10,6 +10,10 @@ export default class UserService {
     email: string,
     password: string,
   ): Promise<User> => {
+    if (!email || !password) {
+      throw new RestError(422, 'Email and Password are required');
+    }
+
     const response = (await this.model.findOne({
       where: { email },
     })) as unknown as { dataValues: User };
