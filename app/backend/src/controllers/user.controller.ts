@@ -6,9 +6,9 @@ export default class UserController {
   constructor(private service = new UserService()) {}
 
   public login = async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await this.service.autenticate(username, password);
+    const user = await this.service.autenticate(email, password);
 
     const token = await generateToken(user);
 

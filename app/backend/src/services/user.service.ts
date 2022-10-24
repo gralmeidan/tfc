@@ -7,11 +7,11 @@ export default class UserService {
   constructor(private model = UserModel) {}
 
   public autenticate = async (
-    username: string,
+    email: string,
     password: string,
   ): Promise<User> => {
     const response = (await this.model.findOne({
-      where: { username },
+      where: { email },
     })) as unknown as { dataValues: User };
 
     if (!response) {
