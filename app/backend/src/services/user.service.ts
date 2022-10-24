@@ -10,9 +10,9 @@ export default class UserService {
     username: string,
     password: string,
   ): Promise<User> => {
-    const user = (await this.model.findOne({
+    const { dataValues: user } = (await this.model.findOne({
       where: { username },
-    })) as User;
+    })) as unknown as { dataValues: User };
 
     if (!user) {
       throw new RestError(404, 'User not found');
@@ -22,8 +22,10 @@ export default class UserService {
       throw new RestError(401, 'Invalid password');
     }
 
-    delete user?.password;
+    const response = { ...user };
+    delete response.password;
+    console.log(response);
 
-    return user;
+    return response;
   };
 }
