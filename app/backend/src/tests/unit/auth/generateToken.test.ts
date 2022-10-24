@@ -3,15 +3,18 @@ import * as jwt from 'jsonwebtoken';
 import * as sinon from 'sinon';
 import { validAdmin } from '../../mocks/user.mock';
 import { expect } from 'chai';
+import mockToken from '../../mocks/token.mock';
 
 describe('Unit tests for auth/generateToken', () => {
   it('Should return a token', async () => {
-    const fakeToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-    sinon.stub(jwt, 'sign').resolves(fakeToken);
+    sinon.stub(jwt, 'sign').resolves(mockToken);
 
     const token = await generateToken(validAdmin.hiddenPassword);
 
-    expect(token).to.equal(fakeToken);
+    expect(token).to.equal(mockToken);
+  });
+
+  after(() => {
+    (jwt.sign as sinon.SinonStub).restore();
   });
 });

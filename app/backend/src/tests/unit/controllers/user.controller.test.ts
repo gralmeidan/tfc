@@ -2,7 +2,6 @@ import * as sinon from 'sinon';
 import * as chai from 'chai';
 import UserController from '../../../controllers/user.controller';
 import UserService from '../../../services/user.service';
-import RestError from '../../../error/RestError';
 import { Request, Response } from 'express';
 import * as sinonChai from 'sinon-chai';
 
