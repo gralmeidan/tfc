@@ -4,6 +4,7 @@ import UserController from '../../../controllers/user.controller';
 import UserService from '../../../services/user.service';
 import { Request, Response } from 'express';
 import * as sinonChai from 'sinon-chai';
+import { validAdmin } from '../../mocks/user.mock';
 
 chai.use(sinonChai);
 
@@ -21,7 +22,9 @@ describe('Unit tests for UserController', () => {
     } as Request;
 
     it('Should correctly return the token', async () => {
-      (service.autenticate as sinon.SinonStub).resolves(true);
+      (service.autenticate as sinon.SinonStub).resolves(
+        validAdmin.hiddenPassword,
+      );
 
       const res = {} as Response;
       res.status = sinon.stub().returns(res);

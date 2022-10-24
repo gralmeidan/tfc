@@ -22,6 +22,7 @@ describe('Tests the routes in /login', () => {
   });
 
   after(() => {
+    (jwt.sign as sinon.SinonStub).restore();
     (UserModel.findOne as sinon.SinonStub).restore();
   });
 
