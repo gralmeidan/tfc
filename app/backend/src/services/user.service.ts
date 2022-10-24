@@ -10,22 +10,22 @@ export default class UserService {
     username: string,
     password: string,
   ): Promise<User> => {
-    const { dataValues: user } = (await this.model.findOne({
+    const response = (await this.model.findOne({
       where: { username },
     })) as unknown as { dataValues: User };
 
-    if (!user) {
+    if (!response) {
       throw new RestError(404, 'User not found');
     }
+
+    const user = { ...response.dataValues };
 
     if (!(await bcrypt.compare(password, user.password || ''))) {
       throw new RestError(401, 'Invalid password');
     }
 
-    const response = { ...user };
-    delete response.password;
-    console.log(response);
+    delete user.password;
 
-    return response;
+    return user;
   };
 }

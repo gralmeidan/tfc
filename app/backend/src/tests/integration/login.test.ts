@@ -17,7 +17,7 @@ describe('Tests the routes in /login', () => {
   before(async () => {
     sinon
       .stub(UserModel, 'findOne')
-      .resolves(validAdmin.fromDb as UserModel);
+      .resolves(validAdmin.fromDb as unknown as UserModel);
     sinon.stub(jwt, 'sign').resolves(mockToken);
   });
 
