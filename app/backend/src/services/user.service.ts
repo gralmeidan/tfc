@@ -6,12 +6,9 @@ import UserModel from '../database/models/user.model';
 export default class UserService {
   constructor(private model = UserModel) {}
 
-  public autenticate = async (
-    email: string,
-    password: string,
-  ): Promise<User> => {
+  public autenticate = async (email: string, password: string): Promise<User> => {
     if (!email || !password) {
-      throw new RestError(422, 'Email and Password are required');
+      throw new RestError(400, 'All fields must be filled');
     }
 
     const response = (await this.model.findOne({
@@ -19,13 +16,13 @@ export default class UserService {
     })) as unknown as { dataValues: User };
 
     if (!response) {
-      throw new RestError(404, 'User not found');
+      throw new RestError(401, 'Incorrect email or password');
     }
 
     const user = { ...response.dataValues };
 
     if (!(await bcrypt.compare(password, user.password || ''))) {
-      throw new RestError(401, 'Invalid password');
+      throw new RestError(401, 'Incorrect email or password');
     }
 
     delete user.password;
