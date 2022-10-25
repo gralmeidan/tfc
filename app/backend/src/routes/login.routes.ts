@@ -7,8 +7,6 @@ const controller = new UserController();
 
 LoginRouter.post('/', controller.login);
 
-LoginRouter.use(verifyToken);
-
-LoginRouter.get('/validate', controller.getOwnRole);
+LoginRouter.get('/validate', verifyToken, controller.getOwnRole);
 
 export default LoginRouter;

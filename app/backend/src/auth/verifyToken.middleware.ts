@@ -6,7 +6,7 @@ import User from '../types/user.type';
 export default async function verifyToken(req: Request, _res: Response, next: NextFunction) {
   try {
     const secret = process.env.JWT_SECRET || 'secret';
-    const token = req.header('Authorization');
+    const token = req.headers.authorization;
 
     if (!token) {
       throw new Error('Authorization token not found');
