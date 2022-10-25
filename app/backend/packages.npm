@@ -1,3 +1,4 @@
+express-async-errors
 chai-as-promised
 @types/chai-as-promised
 sinon-chai
