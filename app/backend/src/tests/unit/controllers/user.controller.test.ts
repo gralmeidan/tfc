@@ -43,4 +43,24 @@ describe('Unit tests for UserController', () => {
       );
     });
   });
+
+  describe('Tests UserController.getOwnRole', () => {
+    const controller = new UserController({} as UserService);
+    const req = {
+      user: validAdmin.hiddenPassword,
+    } as unknown as Request;
+
+    const res = {} as Response;
+    res.status = sinon.stub().returns(res);
+    res.json = sinon.stub();
+
+    it("Should correctly return the calling user's role", async () => {
+      await controller.getOwnRole(req, res);
+
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith({
+        role: validAdmin.hiddenPassword.role,
+      });
+    });
+  });
 });

@@ -14,4 +14,10 @@ export default class UserController {
 
     res.status(200).json({ token });
   };
+
+  public getOwnRole = async (req: Request, res: Response) => {
+    const { role } = req.user;
+
+    res.status(200).json({ role });
+  };
 }
