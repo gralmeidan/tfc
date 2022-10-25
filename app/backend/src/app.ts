@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as cors from 'cors';
+import * as morgan from 'morgan';
 import handleError from './middlewares/handleError.middleware';
 import LoginRouter from './routes/login.routes';
 
@@ -26,6 +27,7 @@ class App {
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(accessControl);
+    this.app.use(morgan('dev'));
 
     this.app.use('/login', LoginRouter);
 
