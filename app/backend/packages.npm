@@ -2,7 +2,5 @@ chai-as-promised
 @types/chai-as-promised
 sinon-chai
 @types/sinon-chai
-cors
-@types/cors
 morgan
 @types/morgan
