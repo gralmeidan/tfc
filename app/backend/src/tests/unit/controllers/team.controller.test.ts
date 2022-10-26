@@ -13,6 +13,7 @@ const { expect } = chai;
 describe('Unit tests for TeamController', () => {
   const service = {
     getAll: sinon.stub(),
+    findById: sinon.stub(),
   } as unknown as TeamService;
   const controller = new TeamController(service);
 
@@ -34,6 +35,23 @@ describe('Unit tests for TeamController', () => {
 
       expect(res.status).to.have.been.calledWith(200);
       expect(res.json).to.have.been.calledWith(teams);
+    });
+  });
+
+  describe('Tests TeamController.findById', () => {
+    it('Should respond with the retrieved item and a 200 statusCode', async () => {
+      const [team] = teams;
+      const { id } = team;
+      const req = {
+        params: { id: String(id) },
+      } as unknown as Request;
+      (service.findById as sinon.SinonStub).resolves(team);
+
+      await controller.findById(req, res);
+
+      expect(service.findById).to.have.been.calledWith(id);
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(team);
     });
   });
 });
