@@ -13,6 +13,7 @@ const { expect } = chai;
 describe('Unit tests for MatchController', () => {
   const service = {
     getAll: sinon.stub(),
+    create: sinon.stub(),
   } as unknown as MatchService;
   const controller = new MatchController(service);
 
@@ -54,6 +55,27 @@ describe('Unit tests for MatchController', () => {
       );
       expect(res.status).to.have.been.calledWith(200);
       expect(res.json).to.have.been.calledWith(matches);
+    });
+  });
+
+  describe('Tests MatchController.create', () => {
+    it('Should respond with the newly added match', async () => {
+      const [match] = matches;
+      const req = {
+        body: {
+          homeTeam: match.homeTeam,
+          homeTeamGoals: match.homeTeamGoals,
+          awayTeam: match.awayTeam,
+          awayTeamGoals: match.awayTeamGoals,
+        },
+      } as Request;
+      (service.create as sinon.SinonStub).resolves(match);
+
+      await controller.create(req, res);
+
+      expect(service.create).to.have.been.calledWith(req.body);
+      expect(res.status).to.have.been.calledWith(201);
+      expect(res.json).to.have.been.calledWith(match);
     });
   });
 });
