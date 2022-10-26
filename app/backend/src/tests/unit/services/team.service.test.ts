@@ -18,7 +18,7 @@ describe('Unit tests for TeamService', () => {
 
   const service = new TeamService(model);
   describe('Tests TeamService.getAll', () => {
-    it('Should return all teams retrieved by TeamModel', async () => {
+    it('Should return all teams retrieved by the model', async () => {
       (model.findAll as sinon.SinonStub).resolves(teams);
 
       const result = await service.getAll();
