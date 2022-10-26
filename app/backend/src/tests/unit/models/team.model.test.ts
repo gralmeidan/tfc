@@ -12,13 +12,13 @@ describe('Tests if Team.model succesfully connects to the database', () => {
   });
 
   it('Should return objects with all expected keys', async () => {
-    const users = (await TeamModel.findAll()) as unknown as {
+    const teams = (await TeamModel.findAll()) as unknown as {
       dataValues: Team;
     }[];
     const keys = ['id', 'teamName'];
 
-    users.forEach((user) => {
-      expect(Object.keys(user.dataValues)).to.eql(keys);
+    teams.forEach((team) => {
+      expect(Object.keys(team.dataValues)).to.eql(keys);
     });
   });
 });
