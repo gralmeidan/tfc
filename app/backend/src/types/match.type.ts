@@ -7,8 +7,10 @@ type Match = {
   awayTeam: number;
   awayTeamGoals: number;
   inProgress: boolean;
-  teamHome: Team;
-  teamAway: Team;
+  teamHome?: Team;
+  teamAway?: Team;
 };
+
+export type NewMatch = Omit<Match, 'id' | 'inProgress' | 'teamHome' | 'teamAway'>;
 
 export default Match;

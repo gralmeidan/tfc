@@ -1,7 +1,7 @@
-import Match from '../types/match.type';
+import Match, { NewMatch } from '../types/match.type';
 import MatchModel from '../database/models/match.model';
 import TeamModel from '../database/models/team.model';
-import { querySchema } from './joi/match.schemas';
+import { newMatchSchema, querySchema } from './joi/match.schemas';
 import RestError from '../error/RestError';
 
 export default class MatchService {
@@ -23,7 +23,7 @@ export default class MatchService {
   constructor(private model = MatchModel) {}
 
   public getAll = async (
-    query?: Partial<Match>,
+    query?: Partial<Omit<Match, 'teamHome' | 'teamAway'>>,
   ): Promise<MatchModel[]> => {
     const { value: q, error } = querySchema.validate(query);
 
@@ -41,5 +41,17 @@ export default class MatchService {
     }
 
     return matches;
+  };
+
+  public create = async (match: NewMatch) => {
+    const { value, error } = newMatchSchema.validate(match);
+
+    if (error) {
+      throw new RestError(422, error.message);
+    }
+
+    const response = await this.model.create(value);
+
+    return response;
   };
 }
