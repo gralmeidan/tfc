@@ -33,4 +33,25 @@ describe('Tests the routes in /teams', () => {
       expect(response.body).to.deep.equal(teams);
     });
   });
+  describe('Tests GET /teams/:id', async () => {
+    before(() => {
+      sinon.stub(TeamModel, 'findByPk');
+    });
+
+    after(() => {
+      (TeamModel.findByPk as sinon.SinonStub).restore();
+    });
+
+    it('Should return the retrieved team', async () => {
+      const [team] = teams;
+      (TeamModel.findByPk as sinon.SinonStub).resolves(team);
+
+      const response = await chai
+        .request(app)
+        .get(`/teams/${team.id}`);
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.deep.equal(team);
+    });
+  });
 });
