@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as morgan from 'morgan';
 import handleError from './middlewares/handleError.middleware';
 import LoginRouter from './routes/login.routes';
+import TeamRouter from './routes/team.routes';
 
 class App {
   public app: express.Express;
@@ -15,6 +16,7 @@ class App {
     this.app.get('/', (req, res) => res.json({ ok: true }));
 
     this.app.use('/login', LoginRouter);
+    this.app.use('/teams', TeamRouter);
     this.app.use(handleError);
   }
 
