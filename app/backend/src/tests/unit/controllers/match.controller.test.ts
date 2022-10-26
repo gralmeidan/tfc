@@ -27,11 +27,31 @@ describe('Unit tests for MatchController', () => {
 
   describe('Tests MatchController.getAll', () => {
     it('Should respond with all retrieved teams and a 200 statusCode', async () => {
-      const req = {} as Request;
+      const req = { query: {} } as Request;
       (service.getAll as sinon.SinonStub).resolves(matches);
 
       await controller.getAll(req, res);
 
+      expect(service.getAll).to.have.been.calledWithExactly(
+        req.query,
+      );
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(matches);
+    });
+
+    it('Should pass any queries to service', async () => {
+      (service.getAll as sinon.SinonStub).resolves(matches);
+      const req = {
+        query: {
+          inProgress: true,
+        },
+      } as unknown as Request;
+
+      await controller.getAll(req, res);
+
+      expect(service.getAll).to.have.been.calledWithExactly(
+        req.query,
+      );
       expect(res.status).to.have.been.calledWith(200);
       expect(res.json).to.have.been.calledWith(matches);
     });
