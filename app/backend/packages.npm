@@ -5,3 +5,4 @@ sinon-chai
 @types/sinon-chai
 morgan
 @types/morgan
+joi
