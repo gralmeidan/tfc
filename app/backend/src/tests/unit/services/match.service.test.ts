@@ -17,6 +17,7 @@ describe('Unit tests for MatchService', () => {
     findAll: sinon.stub(),
     create: sinon.stub(),
     findByPk: sinon.stub(),
+    update: sinon.stub(),
   } as unknown as typeof MatchModel;
 
   const service = new MatchService(model);
@@ -83,6 +84,39 @@ describe('Unit tests for MatchService', () => {
 
       const err = await expect(
         service.create(input),
+      ).to.be.rejectedWith(RestError);
+      expect(err.statusCode).to.equal(422);
+    });
+  });
+
+  describe('Tests MatchService.update', () => {
+    const [match] = matches;
+    const changes = {
+      inProgress: !match.inProgress,
+    };
+
+    it('Should pass the input to sequelize', async () => {
+      const changed = { ...match, ...changes };
+
+      (model.update as sinon.SinonStub).resolves([1]);
+      (model.findByPk as sinon.SinonStub).resolves(changed);
+
+      const response = await service.update(match.id, changes);
+
+      expect(model.update).to.have.been.calledWith(changes, {
+        where: { id: match.id },
+      });
+      expect(model.findByPk).to.have.been.calledWith(match.id);
+      expect(response).to.deep.equal(changed);
+    });
+
+    it('Should return an error when receiving invalid input', async () => {
+      const input = {
+        homeTeam: 'São Paulo',
+      } as any;
+
+      const err = await expect(
+        service.update(match.id, input),
       ).to.be.rejectedWith(RestError);
       expect(err.statusCode).to.equal(422);
     });

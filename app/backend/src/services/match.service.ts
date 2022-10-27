@@ -1,7 +1,11 @@
 import Match, { NewMatch } from '../types/match.type';
 import MatchModel from '../database/models/match.model';
 import TeamModel from '../database/models/team.model';
-import { newMatchSchema, querySchema } from './joi/match.schemas';
+import {
+  newMatchSchema,
+  querySchema,
+  updateSchema,
+} from './joi/match.schemas';
 import RestError from '../error/RestError';
 
 export default class MatchService {
@@ -23,7 +27,7 @@ export default class MatchService {
   constructor(private model = MatchModel) {}
 
   public getAll = async (
-    query?: Partial<Omit<Match, 'teamHome' | 'teamAway'>>,
+    query?: Partial<Match>,
   ): Promise<MatchModel[]> => {
     const { value: q, error } = querySchema.validate(query);
 
@@ -51,6 +55,27 @@ export default class MatchService {
     }
 
     const { id } = await this.model.create(value);
+    const response = await this.model.findByPk(id);
+
+    return response;
+  };
+
+  public update = async (
+    id: number,
+    changes: Partial<Omit<Match, 'id'>>,
+  ) => {
+    const { value, error } = updateSchema.validate(changes);
+
+    if (error) {
+      throw new RestError(422, error.message);
+    }
+
+    await this.model.update(value, {
+      where: {
+        id,
+      },
+    });
+
     const response = await this.model.findByPk(id);
 
     return response;

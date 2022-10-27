@@ -18,3 +18,11 @@ export const newMatchSchema = Joi.object({
   awayTeam: id.required(),
   awayTeamGoals: goals.required(),
 }).required();
+
+export const updateSchema = Joi.object({
+  homeTeam: id.optional(),
+  homeTeamGoals: goals.optional(),
+  awayTeam: id.optional(),
+  awayTeamGoals: goals.optional(),
+  inProgress: Joi.boolean().optional(),
+}).min(1);

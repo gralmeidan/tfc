@@ -1,16 +1,22 @@
 import Team from './team.type';
 
-type Match = {
+export default interface Match {
   id?: number;
   homeTeam: number;
   homeTeamGoals: number;
   awayTeam: number;
   awayTeamGoals: number;
   inProgress: boolean;
+}
+
+export interface FullMatch extends Match {
   teamHome?: Team;
   teamAway?: Team;
-};
+}
 
-export type NewMatch = Omit<Match, 'id' | 'inProgress' | 'teamHome' | 'teamAway'>;
-
-export default Match;
+export interface NewMatch {
+  homeTeam: number;
+  homeTeamGoals: number;
+  awayTeam: number;
+  awayTeamGoals: number;
+}
