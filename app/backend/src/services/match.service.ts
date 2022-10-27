@@ -50,7 +50,8 @@ export default class MatchService {
       throw new RestError(422, error.message);
     }
 
-    const response = await this.model.create(value);
+    const { id } = await this.model.create(value);
+    const response = await this.model.findByPk(id);
 
     return response;
   };

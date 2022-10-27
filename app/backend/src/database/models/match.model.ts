@@ -24,7 +24,10 @@ MatchModel.init(
     homeTeamGoals: INTEGER,
     awayTeam: INTEGER,
     awayTeamGoals: INTEGER,
-    inProgress: BOOLEAN,
+    inProgress: {
+      type: BOOLEAN,
+      defaultValue: true,
+    },
   },
   {
     underscored: true,

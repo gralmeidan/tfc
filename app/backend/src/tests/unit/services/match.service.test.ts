@@ -16,6 +16,7 @@ describe('Unit tests for MatchService', () => {
   const model = {
     findAll: sinon.stub(),
     create: sinon.stub(),
+    findByPk: sinon.stub(),
   } as unknown as typeof MatchModel;
 
   const service = new MatchService(model);
@@ -64,11 +65,13 @@ describe('Unit tests for MatchService', () => {
     };
 
     it('Should pass the input to sequelize', async () => {
-      (model.create as sinon.SinonStub).resolves(match);
+      (model.create as sinon.SinonStub).resolves({ id: match.id });
+      (model.findByPk as sinon.SinonStub).resolves(match);
 
       const response = await service.create(newMatch);
 
       expect(model.create).to.have.been.calledWith(newMatch);
+      expect(model.findByPk).to.have.been.calledWith(match.id);
       expect(response).to.deep.equal(match);
     });
 
