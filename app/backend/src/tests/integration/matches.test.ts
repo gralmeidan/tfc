@@ -66,4 +66,34 @@ describe('Tests the routes in /matches', () => {
       expect(response.body).to.deep.equal(match);
     });
   });
+
+  describe('Tests PATCH /matches/:id/finish', async () => {
+    const [match] = matches;
+
+    before(() => {
+      sinon
+        .stub(MatchModel, 'findByPk')
+        .resolves(match as unknown as MatchModel);
+      sinon.stub(MatchModel, 'update').resolves([1] as any);
+      sinon.stub(jwt, 'verify').resolves({ payload: {} });
+    });
+
+    after(() => {
+      (MatchModel.findByPk as sinon.SinonStub).restore();
+      (MatchModel.update as sinon.SinonStub).restore();
+      (jwt.verify as sinon.SinonStub).restore();
+    });
+
+    it('Should return a successful message with a 200 status', async () => {
+      const response = await chai
+        .request(app)
+        .patch(`/matches/${match.id}/finish`)
+        .set('Authorization', mockToken);
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.deep.equal({
+        message: 'Finished',
+      });
+    });
+  });
 });

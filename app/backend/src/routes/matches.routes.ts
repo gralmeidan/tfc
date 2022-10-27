@@ -8,4 +8,10 @@ const controller = new MatchController();
 MatchRouter.get('/', controller.getAll);
 MatchRouter.post('/', verifyToken, controller.create);
 
+MatchRouter.patch(
+  '/:id/finish',
+  verifyToken,
+  controller.finishMatch,
+);
+
 export default MatchRouter;
