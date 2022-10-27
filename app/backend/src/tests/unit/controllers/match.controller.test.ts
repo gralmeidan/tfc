@@ -22,7 +22,7 @@ describe('Unit tests for MatchController', () => {
   res.status = sinon.stub().returns(res);
   res.json = sinon.stub();
 
-  after(() => {
+  afterEach(() => {
     (res.status as sinon.SinonStub).resetHistory();
     (res.json as sinon.SinonStub).resetHistory();
   });
@@ -99,6 +99,35 @@ describe('Unit tests for MatchController', () => {
       expect(res.status).to.have.been.calledWith(200);
       expect(res.json).to.have.been.calledWith({
         message: 'Finished',
+      });
+    });
+  });
+
+  describe('Tests MatchController.update', () => {
+    it('Should respond with the updated match', async () => {
+      const [match] = matches;
+      const req = {
+        params: { id: String(match.id) },
+        body: {
+          homeTeamGoals: 1,
+          awayTeamGoals: 7,
+        },
+      } as unknown as Request;
+      (service.update as sinon.SinonStub).resolves({
+        ...match,
+        ...req.body,
+      });
+
+      await controller.update(req, res);
+
+      expect(service.update).to.have.been.calledWith(
+        match.id,
+        req.body,
+      );
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith({
+        ...match,
+        ...req.body,
       });
     });
   });
