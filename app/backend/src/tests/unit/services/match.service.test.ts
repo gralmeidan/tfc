@@ -1,11 +1,15 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as Joi from 'joi';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import MatchModel from '../../../database/models/match.model';
+import TeamModel from '../../../database/models/team.model';
 import RestError from '../../../error/RestError';
 import MatchService from '../../../services/match.service';
+import Match from '../../../types/match.type';
 import matches from '../../mocks/match.mock';
+import { teams } from '../../mocks/team.mock';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -119,6 +123,105 @@ describe('Unit tests for MatchService', () => {
         service.update(match.id, input),
       ).to.be.rejectedWith(RestError);
       expect(err.statusCode).to.equal(422);
+    });
+  });
+
+  describe('Tests MatchService.validateInput', async () => {
+    const [match] = matches;
+
+    beforeEach(() => {
+      sinon.stub(TeamModel, 'findByPk');
+    });
+
+    afterEach(() => {
+      (TeamModel.findByPk as sinon.SinonStub).restore();
+    });
+
+    it('Should throw an error when passed input goes against passed schema', async () => {
+      const schema = Joi.object({ id: Joi.number() });
+      const input = {
+        ...match,
+        id: 'Not a number',
+      } as any as Match;
+
+      const err = await expect(
+        service.validateInput(input, schema),
+      ).to.be.rejectedWith(RestError);
+      expect(err.statusCode).to.equal(422);
+    });
+
+    it("Should throw an error when homeTeam doesn't exist", async () => {
+      const { homeTeam } = match;
+
+      (TeamModel.findByPk as sinon.SinonStub).callsFake(
+        async (id: number) => {
+          if (id === homeTeam) {
+            return undefined;
+          }
+          return teams[id - 1];
+        },
+      );
+
+      const schema = Joi.any();
+
+      const err = await expect(
+        service.validateInput(match, schema),
+      ).to.be.rejectedWith(RestError);
+      expect(err.statusCode).to.equal(404);
+    });
+
+    it("Should throw an error when awayTeam doesn't exist", async () => {
+      const { awayTeam } = match;
+
+      (TeamModel.findByPk as sinon.SinonStub).callsFake(
+        async (id: number) => {
+          if (id === awayTeam) {
+            return undefined;
+          }
+          return teams[id - 1];
+        },
+      );
+
+      const schema = Joi.any();
+
+      const err = await expect(
+        service.validateInput(match, schema),
+      ).to.be.rejectedWith(RestError);
+      expect(err.statusCode).to.equal(404);
+    });
+
+    it('Should return the validated values', async () => {
+      (TeamModel.findByPk as sinon.SinonStub).resolves(teams[0]);
+      const schema = Joi.any();
+
+      const response = await service.validateInput(match, schema);
+
+      expect(response).to.deep.equal(match);
+      expect(TeamModel.findByPk).to.have.been.calledTwice;
+    });
+
+    describe("Shouldn't throw when receiving a partial Match", async () => {
+      beforeEach(() => {
+        (TeamModel.findByPk as sinon.SinonStub).resolves(teams[0]);
+      });
+      const schema = Joi.any();
+
+      Object.keys(match).forEach((key) => {
+        it(`No ${key}`, async () => {
+          const input = { ...match } as Partial<Match>;
+          delete input[key as keyof Match];
+
+          const response = await expect(
+            service.validateInput(input, schema),
+          ).not.to.be.rejected;
+          expect(response).to.deep.equal(input);
+          if (key === 'homeTeam' || key === 'awayTeam') {
+            expect(TeamModel.findByPk).to.have.been.calledOnce;
+          } else {
+            expect(TeamModel.findByPk).to.have.been.calledTwice;
+          }
+        });
+      });
     });
   });
 });

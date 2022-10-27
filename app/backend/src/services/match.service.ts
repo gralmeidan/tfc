@@ -1,3 +1,4 @@
+import { AnySchema } from 'joi';
 import Match, { NewMatch } from '../types/match.type';
 import MatchModel from '../database/models/match.model';
 import TeamModel from '../database/models/team.model';
@@ -7,6 +8,7 @@ import {
   updateSchema,
 } from './joi/match.schemas';
 import RestError from '../error/RestError';
+import TeamService from './team.service';
 
 export default class MatchService {
   private defaultOptions = {
@@ -29,11 +31,9 @@ export default class MatchService {
   public getAll = async (
     query?: Partial<Match>,
   ): Promise<MatchModel[]> => {
-    const { value: q, error } = querySchema.validate(query);
-
-    if (error) {
-      throw new RestError(422, error.message);
-    }
+    const q = query
+      ? await this.validateInput(query, querySchema)
+      : query;
 
     const matches = await this.model.findAll({
       ...this.defaultOptions,
@@ -48,11 +48,7 @@ export default class MatchService {
   };
 
   public create = async (match: NewMatch) => {
-    const { value, error } = newMatchSchema.validate(match);
-
-    if (error) {
-      throw new RestError(422, error.message);
-    }
+    const value = await this.validateInput(match, newMatchSchema);
 
     const { id } = await this.model.create(value);
     const response = await this.model.findByPk(id);
@@ -64,11 +60,7 @@ export default class MatchService {
     id: number,
     changes: Partial<Omit<Match, 'id'>>,
   ) => {
-    const { value, error } = updateSchema.validate(changes);
-
-    if (error) {
-      throw new RestError(422, error.message);
-    }
+    const value = await this.validateInput(changes, updateSchema);
 
     await this.model.update(value, {
       where: {
@@ -79,5 +71,29 @@ export default class MatchService {
     const response = await this.model.findByPk(id);
 
     return response;
+  };
+
+  public validateInput = async (
+    input: Partial<Match>,
+    schema: AnySchema,
+  ) => {
+    const { value, error } = schema.validate(input);
+
+    if (error) {
+      throw new RestError(422, error.message);
+    }
+
+    // Retrieves all passed teams then checks if they exist
+    const teamIds = [input.homeTeam, input.awayTeam].filter(
+      Boolean,
+    ) as number[];
+
+    // TeamService.findById will automatically throw an error if team
+    // doesn't exist
+    await Promise.all(
+      teamIds.map(async (id) => new TeamService().findById(id)),
+    );
+
+    return value;
   };
 }
