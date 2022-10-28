@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as morgan from 'morgan';
 import handleError from './middlewares/handleError.middleware';
 import LoginRouter from './routes/login.routes';
+import LeaderBoardRouter from './routes/leaderBoard.routes';
 import MatchRouter from './routes/matches.routes';
 import TeamRouter from './routes/team.routes';
 
@@ -19,13 +20,17 @@ class App {
     this.app.use('/login', LoginRouter);
     this.app.use('/teams', TeamRouter);
     this.app.use('/matches', MatchRouter);
+    this.app.use('/leaderboard', LeaderBoardRouter);
     this.app.use(handleError);
   }
 
   private config(): void {
     const accessControl: express.RequestHandler = (_req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS,PUT,PATCH');
+      res.header(
+        'Access-Control-Allow-Methods',
+        'GET,POST,DELETE,OPTIONS,PUT,PATCH',
+      );
       res.header('Access-Control-Allow-Headers', '*');
       next();
     };
