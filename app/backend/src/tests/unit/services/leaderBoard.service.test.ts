@@ -16,6 +16,11 @@ describe('Unit tests for LeaderBoardService', () => {
   } as unknown as typeof MatchModel;
 
   const service = new LeaderBoardService(model);
+
+  afterEach(() => {
+    (model.findAll as sinon.SinonStub).reset();
+  });
+
   describe('Tests LeaderBoardService.getByLocation', () => {
     it('Should return a formatted and sorted version of the received data', async () => {
       (model.findAll as sinon.SinonStub).resolves(mockLeaderBoard.fromDb);
@@ -47,6 +52,16 @@ describe('Unit tests for LeaderBoardService', () => {
         service.getByLocation('any' as any),
       ).to.be.rejectedWith(RestError);
       expect(err.statusCode).to.equal(422);
+    });
+  });
+  describe('Tests LeaderBoardService.getAll', () => {
+    it('Should combine the retrieved data and return it', async () => {
+      (model.findAll as sinon.SinonStub).resolves(mockLeaderBoard.fromDb);
+
+      const response = await service.getAll();
+
+      expect(model.findAll).to.have.been.calledTwice;
+      expect(response).to.deep.equal(mockLeaderBoard.combined);
     });
   });
 });

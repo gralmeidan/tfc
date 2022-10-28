@@ -121,11 +121,15 @@ export default class LeaderBoardService {
     [key: string]: db.FindOptions;
   };
 
+  private static getName(data: UntreatedLeaderBoard) {
+    return data.teamHome ? data.teamHome.name : data.teamAway.name;
+  }
+
   private mapData = (data: UntreatedLeaderBoard) => {
     const totalPoints = data.totalVictories * 3 + data.totalDraws;
     const response = {
       ...data,
-      name: data.teamHome ? data.teamHome.name : data.teamAway.name,
+      name: LeaderBoardService.getName(data),
       goalsBalance: data.goalsFavor - data.goalsOwn,
       totalPoints,
       efficiency: ((totalPoints / (data.totalGames * 3)) * 100).toFixed(2),
@@ -174,5 +178,54 @@ export default class LeaderBoardService {
       .then(JSON.parse)) as UntreatedLeaderBoard[];
 
     return this.postQuery(response);
+  };
+
+  private reduceToNameDataRelation = (
+    data: UntreatedLeaderBoard[],
+  ): { [key: string]: UntreatedLeaderBoard } =>
+    data.reduce(
+      (prev, cur) => ({
+        ...prev,
+        [LeaderBoardService.getName(cur)]: cur,
+      }),
+      {},
+    );
+
+  private sumLocations = (
+    home: UntreatedLeaderBoard[],
+    away: UntreatedLeaderBoard[],
+  ): UntreatedLeaderBoard[] => {
+    const awayData = this.reduceToNameDataRelation(away);
+
+    return home.map((data) => {
+      const obj = {} as { [key: string]: number };
+      const name = LeaderBoardService.getName(data);
+
+      Object.keys(data).forEach((key) => {
+        const k = key as keyof UntreatedLeaderBoard;
+
+        if (typeof data[k] === 'number') {
+          obj[k] = Number(data[k]) + Number(awayData[name][k]);
+        }
+      });
+
+      return {
+        ...data,
+        ...obj,
+      };
+    });
+  };
+
+  public getAll = async () => {
+    const home = await this.model
+      .findAll(this.defaultOptions.home)
+      .then(JSON.stringify)
+      .then(JSON.parse);
+    const away = await this.model
+      .findAll(this.defaultOptions.away)
+      .then(JSON.stringify)
+      .then(JSON.parse);
+
+    return this.postQuery(this.sumLocations(home, away));
   };
 }
