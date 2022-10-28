@@ -1,7 +1,9 @@
 import * as db from 'sequelize';
+import RestError from '../error/RestError';
 import TeamModel from '../database/models/team.model';
 import MatchModel from '../database/models/match.model';
 import LeaderBoard, { UntreatedLeaderBoard } from '../types/leaderboard.type';
+import { locationSchema } from './joi/leaderBoard.schemas';
 
 export default class LeaderBoardService {
   constructor(private model = MatchModel) {}
@@ -158,6 +160,12 @@ export default class LeaderBoardService {
     data.map(this.mapData).sort(this.sortData);
 
   public getByLocation = async (location: 'home' | 'away' = 'home') => {
+    const { error } = locationSchema.validate(location);
+
+    if (error) {
+      throw new RestError(422, error.message);
+    }
+
     // If you don't remove the weird stuff Sequelize does to the data
     // the sort functions won't work correctly
     const response = (await this.model

@@ -1,8 +1,12 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import LeaderBoardService from '../../../services/leaderBoard.service';
 import MatchModel from '../../../database/models/match.model';
 import mockLeaderBoard from '../../mocks/leaderBoard.mock';
+import RestError from '../../../error/RestError';
+
+chai.use(chaiAsPromised);
 
 const { expect } = chai;
 
@@ -35,6 +39,14 @@ describe('Unit tests for LeaderBoardService', () => {
       const [{ group }] = (model.findAll as sinon.SinonStub).lastCall.args;
 
       expect(group).to.equal('home_team');
+    });
+    it('Should throw an error when receiving any other value', async () => {
+      (model.findAll as sinon.SinonStub).resolves(mockLeaderBoard.fromDb);
+
+      const err = await expect(
+        service.getByLocation('any' as any),
+      ).to.be.rejectedWith(RestError);
+      expect(err.statusCode).to.equal(422);
     });
   });
 });
