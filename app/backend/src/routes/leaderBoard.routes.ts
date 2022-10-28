@@ -5,5 +5,6 @@ const LeaderBoardRouter = Router();
 const controller = new LeaderBoardController();
 
 LeaderBoardRouter.get('/:location', controller.getByLocation);
+LeaderBoardRouter.get('/', controller.getAll);
 
 export default LeaderBoardRouter;

@@ -30,4 +30,22 @@ describe('Tests the routes in /leaderboard', () => {
       expect(response.body).to.deep.equal(mockLeaderBoard.response);
     });
   });
+  describe('Tests GET /leaderboard/', () => {
+    before(async () => {
+      sinon
+        .stub(MatchModel, 'findAll')
+        .resolves(mockLeaderBoard.fromDb as unknown as MatchModel[]);
+    });
+
+    after(() => {
+      (MatchModel.findAll as sinon.SinonStub).restore();
+    });
+
+    it('Should return the retrieved and combined data', async () => {
+      const response = await chai.request(app).get('/leaderboard');
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.deep.equal(mockLeaderBoard.combined);
+    });
+  });
 });
