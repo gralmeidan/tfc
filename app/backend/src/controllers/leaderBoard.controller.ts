@@ -13,4 +13,10 @@ export default class LeaderBoardController {
 
     res.status(200).json(response);
   };
+
+  public getAll = async (req: Request, res: Response) => {
+    const response = await this.service.getAll();
+
+    res.status(200).json(response);
+  };
 }

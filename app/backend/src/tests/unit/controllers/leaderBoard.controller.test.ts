@@ -13,6 +13,7 @@ const { expect } = chai;
 describe('Unit tests for LeaderBoardController', () => {
   const service = {
     getByLocation: sinon.stub(),
+    getAll: sinon.stub(),
   } as unknown as LeaderBoardService;
 
   const controller = new LeaderBoardController(service);
@@ -40,6 +41,17 @@ describe('Unit tests for LeaderBoardController', () => {
       await controller.getByLocation(req, res);
 
       expect(service.getByLocation).to.have.been.calledWith('home');
+      expect(res.status).to.have.been.calledWith(200);
+      expect(res.json).to.have.been.calledWith(mockLeaderBoard.response);
+    });
+  });
+  describe('Tests LeaderBoardController.getAll', () => {
+    it('Should pass response to the user', async () => {
+      const req = {} as Request;
+      (service.getAll as sinon.SinonStub).resolves(mockLeaderBoard.response);
+
+      await controller.getAll(req, res);
+
       expect(res.status).to.have.been.calledWith(200);
       expect(res.json).to.have.been.calledWith(mockLeaderBoard.response);
     });
