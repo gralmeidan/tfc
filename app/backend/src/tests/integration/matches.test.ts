@@ -7,6 +7,8 @@ import MatchModel from '../../database/models/match.model';
 import matches from '../mocks/match.mock';
 import * as jwt from 'jsonwebtoken';
 import mockToken from '../mocks/token.mock';
+import TeamModel from '../../database/models/team.model';
+import { teams } from '../mocks/team.mock';
 
 chai.use(chaiHttp);
 
@@ -74,6 +76,7 @@ describe('Tests the routes in /matches', () => {
       sinon
         .stub(MatchModel, 'findByPk')
         .resolves(match as unknown as MatchModel);
+      sinon.stub(TeamModel, 'findByPk').resolves(teams[0] as any);
       sinon.stub(MatchModel, 'update').resolves([1] as any);
       sinon.stub(jwt, 'verify').resolves({ payload: {} });
     });
@@ -81,6 +84,7 @@ describe('Tests the routes in /matches', () => {
     after(() => {
       (MatchModel.findByPk as sinon.SinonStub).restore();
       (MatchModel.update as sinon.SinonStub).restore();
+      (TeamModel.findByPk as sinon.SinonStub).restore();
       (jwt.verify as sinon.SinonStub).restore();
     });
 
@@ -93,6 +97,47 @@ describe('Tests the routes in /matches', () => {
       expect(response.status).to.equal(200);
       expect(response.body).to.deep.equal({
         message: 'Finished',
+      });
+    });
+  });
+
+  describe('Tests PATCH /matches/:id', async () => {
+    const [match] = matches;
+    const changes = {
+      homeTeamGoals: 1,
+      awayTeamGoals: 7,
+    };
+
+    before(() => {
+      sinon.stub(MatchModel, 'findByPk');
+      sinon.stub(TeamModel, 'findByPk').resolves(teams[0] as any);
+      sinon.stub(MatchModel, 'update').resolves([1] as any);
+      sinon.stub(jwt, 'verify').resolves({ payload: {} });
+    });
+
+    after(() => {
+      (MatchModel.findByPk as sinon.SinonStub).restore();
+      (MatchModel.update as sinon.SinonStub).restore();
+      (TeamModel.findByPk as sinon.SinonStub).restore();
+      (jwt.verify as sinon.SinonStub).restore();
+    });
+
+    it('Should return the updated match with a 200 statusCode', async () => {
+      (MatchModel.findByPk as sinon.SinonStub).resolves({
+        ...match,
+        ...changes,
+      });
+
+      const response = await chai
+        .request(app)
+        .patch(`/matches/${match.id}`)
+        .set('Authorization', mockToken)
+        .send(changes);
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.deep.equal({
+        ...match,
+        ...changes,
       });
     });
   });

@@ -14,4 +14,6 @@ MatchRouter.patch(
   controller.finishMatch,
 );
 
+MatchRouter.patch('/:id', verifyToken, controller.update);
+
 export default MatchRouter;
