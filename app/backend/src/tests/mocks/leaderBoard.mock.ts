@@ -219,7 +219,7 @@ const mockLeaderBoard = {
       totalVictories: 2,
       totalLosses: 0,
       totalDraws: 0,
-      teamHome: { name: 'Corinthians' },
+      teamAway: { name: 'Corinthians' },
     },
     {
       totalGames: 3,
@@ -237,7 +237,7 @@ const mockLeaderBoard = {
       totalVictories: 0,
       totalLosses: 1,
       totalDraws: 1,
-      teamHome: { name: 'Flamengo' },
+      teamAway: { name: 'Flamengo' },
     },
     {
       totalGames: 2,
@@ -255,7 +255,7 @@ const mockLeaderBoard = {
       totalVictories: 2,
       totalLosses: 0,
       totalDraws: 1,
-      teamHome: { name: 'Palmeiras' },
+      teamAway: { name: 'Palmeiras' },
     },
     {
       totalGames: 3,
@@ -273,7 +273,7 @@ const mockLeaderBoard = {
       totalVictories: 0,
       totalLosses: 2,
       totalDraws: 1,
-      teamHome: { name: 'Avaí/Kindermann' },
+      teamAway: { name: 'Avaí/Kindermann' },
     },
     {
       totalGames: 3,
@@ -291,7 +291,7 @@ const mockLeaderBoard = {
       totalVictories: 2,
       totalLosses: 0,
       totalDraws: 0,
-      teamHome: { name: 'Real Brasília' },
+      teamAway: { name: 'Real Brasília' },
     },
     {
       totalGames: 2,
@@ -309,7 +309,7 @@ const mockLeaderBoard = {
       totalVictories: 2,
       totalLosses: 0,
       totalDraws: 0,
-      teamHome: { name: 'Grêmio' },
+      teamAway: { name: 'Grêmio' },
     },
     {
       totalGames: 3,
@@ -327,7 +327,7 @@ const mockLeaderBoard = {
       totalVictories: 0,
       totalLosses: 2,
       totalDraws: 1,
-      teamHome: { name: 'Minas Brasília' },
+      teamAway: { name: 'Minas Brasília' },
     },
     {
       totalGames: 2,

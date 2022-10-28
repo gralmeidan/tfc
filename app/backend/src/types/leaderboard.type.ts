@@ -8,6 +8,9 @@ export type UntreatedLeaderBoard = {
   teamHome: {
     name: string;
   };
+  teamAway: {
+    name: string;
+  };
 };
 
 type LeaderBoard = {

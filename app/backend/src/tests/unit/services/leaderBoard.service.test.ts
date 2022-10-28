@@ -12,13 +12,29 @@ describe('Unit tests for LeaderBoardService', () => {
   } as unknown as typeof MatchModel;
 
   const service = new LeaderBoardService(model);
-  describe('Tests LeaderBoardService.getAll', () => {
+  describe('Tests LeaderBoardService.getByLocation', () => {
     it('Should return a formatted and sorted version of the received data', async () => {
       (model.findAll as sinon.SinonStub).resolves(mockLeaderBoard.fromDb);
 
-      const response = await service.getAll();
+      const response = await service.getByLocation();
 
       expect(response).to.deep.equal(mockLeaderBoard.response);
+    });
+    it("Should call the correct option set when receiving 'away'", async () => {
+      (model.findAll as sinon.SinonStub).resolves(mockLeaderBoard.fromDb);
+
+      await service.getByLocation('away');
+      const [{ group }] = (model.findAll as sinon.SinonStub).lastCall.args;
+
+      expect(group).to.equal('away_team');
+    });
+    it("Should call the correct option set when receiving 'home'", async () => {
+      (model.findAll as sinon.SinonStub).resolves(mockLeaderBoard.fromDb);
+
+      await service.getByLocation('home');
+      const [{ group }] = (model.findAll as sinon.SinonStub).lastCall.args;
+
+      expect(group).to.equal('home_team');
     });
   });
 });
